@@ -1,55 +1,88 @@
-const express = require("express");
-const cors = require("cors");
-const nodemailer = require("nodemailer");
-require("dotenv").config();
+"use client";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+import { useState } from "react";
 
-// POST /api/contact
-app.post("/api/contact", async (req, res) => {
-  const { name, email, message } = req.body;
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [status, setStatus] = useState("");
 
-  // Vérifie que tous les champs sont remplis
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: "Please fill all fields" });
-  }
-
-  try {
-    // Création d’un transporteur avec ton compte Gmail
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER, // mis dans .env
-        pass: process.env.EMAIL_PASS, // mis dans .env
-      },
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
+  };
 
-    // Options de l’email
-    const mailOptions = {
-      from: email, // l’expéditeur est le mail de l’utilisateur
-      to: process.env.EMAIL_RECEIVER, // ton email à toi
-      subject: `Contact from ${name}`,
-      text: `
-        Name: ${name}
-        Email: ${email}
-        Message:
-        ${message}
-      `,
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("Envoi en cours...");
 
-    // Envoie l’email
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ success: "Message sent successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error sending message" });
-  }
-});
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contact`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-// Lancement du serveur
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+      if (response.ok) {
+        setStatus("Message envoyé !");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setStatus("Erreur lors de l'envoi");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      setStatus("Erreur lors de l'envoi");
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto py-8">
+      <h1 className="text-2xl font-bold mb-4">Contactez-nous</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="name"
+          type="text"
+          placeholder="Nom"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <textarea
+          name="message"
+          placeholder="Message"
+          value={formData.message}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        ></textarea>
+        <button
+          type="submit"
+          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+        >
+          Envoyer
+        </button>
+      </form>
+      {status && <p className="mt-4 text-sm text-gray-600">{status}</p>}
+    </div>
+  );
+}
