@@ -12,7 +12,7 @@ export default function ContactPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contact`, {
+      const response = await fetch(`https://tacha-backend-1.onrender.com/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -43,6 +43,7 @@ export default function ContactPage() {
       setStatus("Une erreur est survenue.");
     }
   };
+console.log("URL utilisée:", process.env.NEXT_PUBLIC_API_URL);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
