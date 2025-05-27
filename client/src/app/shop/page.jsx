@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
@@ -8,7 +9,7 @@ export default function ShopPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/products")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Erreur lors du chargement des produits");
