@@ -9,28 +9,25 @@ export default function ShopPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Erreur lors du chargement des produits");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else {
-          setError("Les données reçues ne sont pas valides.");
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Impossible de charger les produits.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
+    .then((res) => {
+      if (!res.ok) throw new Error("Erreur lors du chargement des produits");
+      return res.json();
+    })
+    .then((data) => {
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        setError("Les données reçues ne sont pas valides.");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      setError("Impossible de charger les produits.");
+    })
+    .finally(() => setLoading(false));
+}, []);
+
 
   if (loading) return <p className="text-center mt-10">Chargement...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
