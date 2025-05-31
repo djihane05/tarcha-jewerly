@@ -47,7 +47,7 @@ console.log("URL utilisée:", process.env.NEXT_PUBLIC_API_URL);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Contactez-nous</h1>
+      <h1 className="text-2xl font-bold mb-4">Contactez-nous jeyjey</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
